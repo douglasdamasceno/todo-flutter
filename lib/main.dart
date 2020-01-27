@@ -117,7 +117,6 @@ class _HomePageState extends State<HomePage> {
             ),
             onDismissed: (direction) {
               remove(index);
-              print(direction);
             },
           );
         },
