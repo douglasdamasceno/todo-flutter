@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 import 'models/item.dart';
 
@@ -23,9 +24,6 @@ class HomePage extends StatefulWidget {
 
   HomePage() {
     items = [];
-    items.add(Item(id: "1", title: "estudar flutter", done: true));
-    items.add(Item(id: "2", title: "estudar react native", done: false));
-    items.add(Item(id: "3", title: "estudar ionic", done: false));
   }
 
   @override
@@ -34,17 +32,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var newTaskCtrl = TextEditingController();
-  var IdCtrl = 0;
+  var uuid = Uuid();
 
   void add() {
+    if (newTaskCtrl.text.isEmpty) return;
     setState(() {
       widget.items.add(Item(
-        id: IdCtrl.toString(),
+        id: uuid.v1(),
         title: newTaskCtrl.text,
         done: false,
       ));
-      IdCtrl++;
-      print(IdCtrl);
       newTaskCtrl.text = "";
     });
   }
