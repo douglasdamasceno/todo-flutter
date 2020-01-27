@@ -1,6 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/item.dart';
 
@@ -24,9 +26,6 @@ class HomePage extends StatefulWidget {
 
   HomePage() {
     items = [];
-    items.add(Item(id: "1", title: "items 1", done: false));
-    items.add(Item(id: "2", title: "items 2", done: false));
-    items.add(Item(id: "3", title: "items 3", done: true));
   }
 
   @override
@@ -46,15 +45,38 @@ class _HomePageState extends State<HomePage> {
         done: false,
       ));
       newTaskCtrl.text = "";
+      save();
     });
   }
 
   void remove(int index) {
     setState(() {
       widget.items.removeAt(index);
+      save();
     });
   }
 
+  Future load() async {
+    var prefs = await SharedPreferences.getInstance();
+    var data = prefs.getString('data');
+
+    if (data != null) {
+      Iterable decoded = jsonDecode(data);
+      List<Item> result = decoded.map((x) => Item.fromJson(x)).toList();
+      setState(() {
+        widget.items = result;
+      });
+    }
+  }
+
+  save() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setString('data', jsonEncode(widget.items));
+  }
+
+  _HomePageState() {
+    load();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,8 +107,8 @@ class _HomePageState extends State<HomePage> {
               onChanged: (value) {
                 setState(() {
                   item.done = value;
+                  save();
                 });
-                print(value);
               },
             ),
             key: Key(item.id),
@@ -95,7 +117,6 @@ class _HomePageState extends State<HomePage> {
             ),
             onDismissed: (direction) {
               if (direction == DismissDirection.startToEnd) {}
-              print(direction);
               remove(index);
             },
           );
