@@ -116,8 +116,8 @@ class _HomePageState extends State<HomePage> {
               color: Colors.red.withOpacity(0.8),
             ),
             onDismissed: (direction) {
-              if (direction == DismissDirection.startToEnd) {}
               remove(index);
+              print(direction);
             },
           );
         },
